@@ -20,6 +20,7 @@ public class Script
         Console.WriteLine("Binary folder: " + binaryFolder);
         Console.WriteLine("Assembly path: " + assemblyPath);
         Console.WriteLine("Version: " + version.ToString());
+        Console.WriteLine("Manufacturer: " + assemblyInfo.CompanyName);
 
         Project project =
             new Project(projectName + "_" + version.ToString(),
@@ -39,10 +40,10 @@ public class Script
             );
 
         project.Version = version;
-        project.GUID = new Guid("486e6547-0e79-4b25-bd39-11353b95210b");
+        project.GUID = new Guid("54f5a0b8-6f60-4a70-a095-43e2b93bc0fe");
 
         //project.SetNetFxPrerequisite("NETFRAMEWORK45 >='#378389'", "Please install .Net 4.5 first");
-        project.ControlPanelInfo.ProductIcon = projectFolder + @"\" + projectName + @"\Resources\trafficlights.ico";
+        //project.ControlPanelInfo.ProductIcon = projectFolder + @"\" + projectName + @"\Resources\trafficlights.ico";
         project.ControlPanelInfo.NoModify = true;
         project.ControlPanelInfo.Manufacturer = assemblyInfo.CompanyName;
 
