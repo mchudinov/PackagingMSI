@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Run">   
+
+    <PropertyGroup>
+	    <Configuration>Release</Configuration>
+        <SolutionName>PackagingMSI</SolutionName>
+	</PropertyGroup>
+
+    <Target Name="Run">
+	 <CallTarget Targets="Clean" />
+	 <CallTarget Targets="Restore" />
+	 <CallTarget Targets="Version" />
+	 <CallTarget Targets="Build" />
+    </Target>
+    
+	<Target Name="Clean">
+		<Message Text="Clean" />
+		<ItemGroup>
+			<FilesToDeleteInPackageFolder Include="*.msi"/>
+			<FilesToDeleteInPackageFolder Include="$(SolutionName).WixSharp/*.msi"/>
+		</ItemGroup>
+		<Delete Files="@(FilesToDeleteInPackageFolder)"/>
+	</Target>
+    
+    <Target Name="Restore">
+	 <Message Text="Restore NuGet packages" />
+     <Exec Command="nuget.exe restore" ContinueOnError="False"/>
+    </Target>
+  
+  	<UsingTask AssemblyFile="packages/MSBuild.Extension.Pack.1.6.0/tools/net40/MSBuild.ExtensionPack.dll" TaskName="AssemblyInfo"/>
+	<Target Name="Version">
+		<Message Text="Versioning assemblies" />
+	
+		<ItemGroup>
+		  <AssemblyInfoFiles Include="**\AssemblyInfo.cs" />
+		</ItemGroup>
+	
+		<AssemblyInfo
+			AssemblyInfoFiles="@(AssemblyInfoFiles)"
+			
+			AssemblyMajorVersion="$(MajorVersion)"
+			AssemblyMinorVersion="$(MinorVersion)"
+			AssemblyBuildNumberType="DateString"
+			AssemblyBuildNumberFormat="MMdd"
+			AssemblyRevisionType="AutoIncrement"
+			AssemblyRevisionFormat="000"
+		  
+			AssemblyFileMajorVersion="$(MajorVersion)"
+			AssemblyFileMinorVersion="$(MinorVersion)"
+			AssemblyFileBuildNumberType="DateString"
+			AssemblyFileBuildNumberFormat="MMdd"
+			AssemblyFileRevisionType="AutoIncrement"
+			AssemblyFileRevisionFormat="000"
+		/>
+	</Target>
+	
+    <Target Name="Build">
+	  <Message Text="Build $(Configuration)" />
+	  <MSBuild Projects="$(SolutionName)/$(SolutionName).csproj" Properties="Configuration=$(Configuration)" ContinueOnError="False"/>
+    </Target>
+
+    <Target Name="Pack">
+        <Message Text="Pack application into MSI" />
+        <ItemGroup>
+			<FilesToDeleteInPackageFolder Include="*.msi"/>
+            <FilesToDeleteInPackageFolder Include="$(SolutionName).WixSharp/*.msi"/>
+        </ItemGroup>
+        <Delete Files="@(FilesToDeleteInPackageFolder)"/>
+        <Exec Command="cscs.exe $(SolutionName).WixSharp/Script.cs $(SolutionName) $(MSBuildProjectDirectory)" ContinueOnError="False"/>
+    </Target>
+
+</Project>
